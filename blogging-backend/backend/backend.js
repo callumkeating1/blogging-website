@@ -138,27 +138,12 @@ function post(username, [title, text]) {
 }
 async function checkAccountExists(username, email) {
     return new Promise((resolve, reject) => {
-        db.query('SELECT * FROM users WHERE username = ?', [username], (err, result) => {
+        db.query('SELECT * FROM users WHERE userName = ? OR email = ?', [username, email], (err, result) => {
             if (err) return reject(2);
-            if (result.length > 0) return resolve(1);
-            db.query('SELECT * FROM users WHERE email = ?', [email], (err, result) => {
-                if (err) return reject(2);
-                if (result.length > 0) return resolve(1);
-                else return resolve(0);
-            });
+            resolve(result.length > 0 ? 1 : 0);
         });
     });
 }
 
+
 module.exports = { createaccount, hashPassword, comparePassword, login, post, checkAccountExists };
-
-
-/*
-return res.status(200).json({ error : 'badRequest', message : 'username or password is incorrect', 'code': 200 });
-return res.status(500).json({ error : 'serverError', message : 'server encountered an unknown error while logging in', 'code' : 500 });
-return res.status(200).json({ error: 'badRequest', message : 'password is blank!', 'code': 200 });
-
-
-
-
-*/
