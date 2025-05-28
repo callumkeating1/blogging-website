@@ -131,11 +131,11 @@ async function checkAccountExists(username, email) {
 
 
 export default {
-  createaccount,
-  hashPassword,
-  comparePassword,
-  login,
-  post,
-  checkAccountExists,
-  deleteAccount
+    createaccount,
+    hashPassword,
+    comparePassword,
+    login,
+    post,
+    checkAccountExists,
+    deleteAccount
 };
