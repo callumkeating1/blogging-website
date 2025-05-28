@@ -1,8 +1,10 @@
 import "dotenv/config";
 import cors from "cors";
-import { app, express } from "express";
+import express from "express";
 import http from "http";
 import backend from "./backend/backend.js";
+
+const app = express();
 const port = 5000;
 
 app.use(cors());

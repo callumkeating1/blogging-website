@@ -130,4 +130,12 @@ async function checkAccountExists(username, email) {
 }
 
 
-module.exports = { createaccount, hashPassword, comparePassword, login, post, checkAccountExists,deleteAccount };
+export default {
+  createaccount,
+  hashPassword,
+  comparePassword,
+  login,
+  post,
+  checkAccountExists,
+  deleteAccount
+};
