@@ -15,16 +15,13 @@ app.get('/', (req,res) => {
     return res.status(200).send("connected successfully");
 });
 app.post('/account/create', async (req,res) => {
-    const existingAcc = await backend.checkAccountExists(req.body.username);
+    const existingAcc = await backend.checkAccountExists(req.body.username, req.body.email);
     if (existingAcc === 1) {
-        return res.status(409).json({error : 'Conflict', message : 'account already exists'})
+        return res.status(409).json({error : 'Conflict', message : 'username or email is already in use'})
     }
-    response = backend.createaccount(req.body.username,req.body.email,req.body.password);
+    response = await backend.createaccount(req.body.username,req.body.email,req.body.password);
     if (response == "successfully created account")  {
         return res.status(201).json({error : 'none', message : 'successfully created user', 'code' : 201});
-    } else if(response == "username already exists") {
-        console.log("username already exists");
-        return res.status(400).json({ error : 'badRequest', message : 'username already exists', 'code' : 400 });
     }
 });
 app.post('/account/login', (req,res) => {

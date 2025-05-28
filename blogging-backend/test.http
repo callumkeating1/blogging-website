@@ -2,8 +2,8 @@ POST http://localhost:5000/account/create
 Content-Type: application/json
 
 {
-  "username": "callsu",
-  "email": "test@example.com",
+  "username": "testuser2",
+  "email": "test@examplewadss.com",
   "password": "mypassworsd"
 }
 

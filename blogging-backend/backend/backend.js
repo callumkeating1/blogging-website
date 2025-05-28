@@ -61,14 +61,9 @@ function createaccount(username,email,password) {
         if (err) throw err;
         password = hash;
     });
-    db.query('SELECT * FROM users WHERE userName = ?', [username], (err, result) => {
-        if (result.length > 0) {
-            return "username already exists";
-        }
-        db.query('INSERT INTO users (userName, email,password, isAdmin) VALUES (?, ?, ?,0)', [username,email,password],(err, result) => {
-            if (err) throw err;
-        });
-    })
+    db.query('INSERT INTO users (userName, email,password, isAdmin) VALUES (?, ?, ?,0)', [username,email,password],(err, result) => {
+        if (err) throw err;
+    });
     console.log("created account");
     return "successfully created account";
 }
