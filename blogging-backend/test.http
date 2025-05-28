@@ -4,8 +4,9 @@ Content-Type: application/json
 {
   "username": "testuser",
   "email": "test@example.com",
-  "password": "mypassword"
+  "password": "mypassworsd"
 }
+
 ###
 
 POST http://localhost:5000/account/delete

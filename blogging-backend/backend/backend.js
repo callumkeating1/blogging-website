@@ -136,9 +136,21 @@ function post(username, [title, text]) {
         })
     })
 }
+async function checkAccountExists(username, email) {
+    return new Promise((resolve, reject) => {
+        db.query('SELECT * FROM users WHERE username = ?', [username], (err, result) => {
+            if (err) return reject(2);
+            if (result.length > 0) return resolve(1);
+            db.query('SELECT * FROM users WHERE email = ?', [email], (err, result) => {
+                if (err) return reject(2);
+                if (result.length > 0) return resolve(1);
+                else return resolve(0);
+            });
+        });
+    });
+}
 
-
-module.exports = { createaccount, hashPassword, comparePassword, login, post };
+module.exports = { createaccount, hashPassword, comparePassword, login, post, checkAccountExists };
 
 
 /*

@@ -14,8 +14,13 @@ const server = http.createServer(app);
 app.get('/', (req,res) => {
     return res.status(200).send("connected successfully");
 });
-app.post('/account/create', (req,res) => {
+app.post('/account/create', async (req,res) => {
     console.log("create request recived")
+    const existingAcc = await backend.checkAccountExists(req.body.username);
+    console.log(existingAcc)
+    if (existingAcc === 1) {
+        return res.status(409).json({error : 'Conflict', message : 'account already exists'})
+    }
     response = backend.createaccount(req.body.username,req.body.email,req.body.password);
     if (response == "successfully created account")  {
         return res.status(201).json({error : 'none', message : 'successfully created user', 'code' : 201});
@@ -30,7 +35,8 @@ app.post('/account/login', (req,res) => {
     }
 }) 
 app.delete('/account/delete', (req,res) => {
-    response = backend.deleteAccount(req.body.username,req.body.password);
+    console.log("delete request recived")
+    const response = backend.deleteAccount(req.body.username,req.body.password);
     if (response == "success") {
         return res.status(204).json({ error : 'none', message : 'successfully deleted user', 'code' : 200 });
     }
