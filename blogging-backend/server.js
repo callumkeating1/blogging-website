@@ -19,9 +19,12 @@ app.post('/account/create', async (req,res) => {
     if (existingAcc === 1) {
         return res.status(409).json({error : 'Conflict', message : 'username or email is already in use'})
     }
-    response = await backend.createaccount(req.body.username,req.body.email,req.body.password);
-    if (response == "successfully created account")  {
+    const createRresponse = await backend.createaccount(req.body.username,req.body.email,req.body.password);
+    if (createRresponse == "successfully created account")  {
         return res.status(201).json({error : 'none', message : 'successfully created user', 'code' : 201});
+    }
+    else {
+        console.log(createRresponse)
     }
 });
 app.post('/account/login', (req,res) => {

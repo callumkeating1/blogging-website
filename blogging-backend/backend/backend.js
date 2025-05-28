@@ -58,19 +58,28 @@ async function comparePassword(plainTextPassword,hashedPassword) {
 } 
 
 async function createaccount(username,email,password) {
-    hash = bycrpt.hash(password, 10, (err, hash) => {
-        if (err) throw err;
-        password = hash;
-        db.query('INSERT INTO users (userName, email,password, isAdmin) VALUES (?, ?, ?,0)', [username,email,password],(err, result) => {
-            if (err) {
-                return error
-            }
-            console.log("created account");
-            return "successfully created account";
-        });
-    });
+    try{
+        const output = await new Promise((resolve,reject) => {
+            hash = bycrpt.hash(password, 10, (err, hash) => {
+                if (err) throw err;
+                password = hash;
+                db.query('INSERT INTO users (userName, email,password, isAdmin) VALUES (?, ?, ?,0)', [username,email,password],(err, result) => {
+                    if (err) {
+                        reject("server encounted error")
+                    }
+                    console.log("created account");
+                    resolve("successfully created account");
+                });
+            });
+        })
+        return output;
+    }
+    catch (err) {
+        return err;
+    }
 }
 async function deleteAccount(username, password) {
+    
     if (!password || password.trim().length === 0 || !username || username.trim().length === 0) {
         return "password is blank!";
     }
@@ -84,24 +93,47 @@ async function deleteAccount(username, password) {
         });
         return result;
     } catch (err) {
-        return err; // will be "error"
+        return err;
     }
 }
 
 
 async function login(username,password) {
-    db.query('SELECT password FROM users WHERE userName = ?',[username], (err, result) => {
-        if (err) {
-            console.log(err);
-            return "server encounterd an error while logging in";
+    try {
+        const output = await new Promise((resolve,reject) => {
+            db.query('SELECT id, password, isAdmin FROM users WHERE userName = ?', [username], (err, result) => {
+                if (err) {
+                    console.log(err);
+                    reject("server encounterd an error while logging in");
+                }
+                if (!comparePassword(password,result[0].password)) {
+                    reject("username or password is incorrect");
+                }
+                if (password.length <= 0) {
+                    reject("password is blank!");
+                }
+    
+                let jwtData = {
+                    username: username,
+                    id: result[0].id,
+                    isAdmin: result[0].isAdmin
+                }
+                webToken = jwt.sign(jwtData,secretKey,{algorithm: 'RS256',expiresIn: '30d'});
+                console.log(webToken);
+                resolve(webToken)
+            })
+        })
+        return output;
+    }
+    catch (err) {
+        if (err === "password is blank!") {
+            return "blank password";
         }
-        if (!comparePassword(password,result[0].password)) {
-            return "username or password is incorrect";
+        else if (err === "username or password is incorrect") {
+            return "username or password incorrect";
         }
-        if (password.length <= 0) {
-            return "password is blank!";
-        }
-    })
+    }
+
 }
 
 
