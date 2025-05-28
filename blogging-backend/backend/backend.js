@@ -6,6 +6,7 @@ const db = mysql.createConnection({
     host: "localhost",
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
+    database: "blog"
 });
 
 db.connect(err => {
@@ -17,6 +18,9 @@ db.connect(err => {
     }
 
 });
+
+
+
 
 function generateToken(jsondata, options = {}) {
     // Make sure jsondata is an object, not an array (you might need to tweak this depending on what you need)
@@ -31,12 +35,18 @@ function generateToken(jsondata, options = {}) {
     return jwt.sign(jsondata,secretKey,defaultOptions)
 }
 
-
-
-
-
-
-
+function verifyToken(token) {
+    if (!token) {
+        throw new Error('Token is required');
+    }
+    try {
+        const decoded = jwt.verify(token, secretKey);
+        console.log(decoded);
+        return [0,decoded];
+    } catch (err) {
+        return [1,"Invalid token"];
+    }
+}
 
 async function hashPassword(password, salt = 10) {
     const hashed = await bycrpt.hash(password,salt);
@@ -44,22 +54,55 @@ async function hashPassword(password, salt = 10) {
 }
 async function comparePassword(plainTextPassword,hashedPassword) {
     return await bycrpt.compare(plainTextPassword,hashedPassword);
-}
+} 
 
 function createaccount(username,email,password) {
     bycrpt.hash(password, 10, (err, hash) => {
         if (err) throw err;
         password = hash;
     });
-    db.query('INSERT INTO users (userName, email,password, isAdmin) VALUES (?, ?, ?,0)', [username,email,password],(err, result) => {
-        if (err) throw err;
-        console.log(result);
-        return "successfully created account";
-      });
+    db.query('SELECT * FROM users WHERE userName = ?', [username], (err, result) => {
+        if (result.length > 0) {
+            return "username already exists";
+        }
+        db.query('INSERT INTO users (userName, email,password, isAdmin) VALUES (?, ?, ?,0)', [username,email,password],(err, result) => {
+            if (err) throw err;
+        });
+    })
+    console.log("created account");
+    return "successfully created account";
+}
+async function deleteAccount(username, password) {
+    db.query('SELECT password FROM users WHERE userName = ?', [username], (err, result) => {
+        if (err) {
+            return "error occured while fetching userdata";
+        }
+        if (comparePassword(password, result[0].password)) {
+            console.log("password matched");
+        } else {
+            return "username or password is incorrect";
+        }
+        if (password.length <= 0) {
+            return "password is blank!";
+        }
+        db.query('DELETE FROM posts WHERE userName = ?', [result], (err, result) => {
+            if (err) {
+                return "error occured while deleting posts";
+            }
+            console.log(result);
+            db.query('DELETE FROM users WHERE userName = ?', [username], (err, result) => {
+                if (err) {
+                    return "error occured while deleting account";
+                }
+
+                console.log(result);        
+                return "success";
+            })
+        })
+    })
 }
 
-
-function login(username,password) {
+async function login(username,password) {
     db.query('SELECT password FROM users WHERE userName = ?',[username], (err, result) => {
         if (err) {
             console.log(err);
@@ -78,7 +121,7 @@ function login(username,password) {
 
 
 function post(username, [title, text]) {
-    db.query('SELECT userID FROM users WHERE userName = ?'[username], (err, result) => {
+    db.query('SELECT userID FROM users WHERE userName = ?', [username], (err, result) => {
         if (err) {
             return "error occured while fetching userdata";
         }
@@ -95,7 +138,7 @@ function post(username, [title, text]) {
 }
 
 
-module.exports = [ createaccount, hashPassword, comparePassword, login ];
+module.exports = { createaccount, hashPassword, comparePassword, login, post };
 
 
 /*

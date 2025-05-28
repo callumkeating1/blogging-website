@@ -1,0 +1,17 @@
+POST http://localhost:5000/account/create
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "email": "test@example.com",
+  "password": "mypassword"
+}
+###
+
+POST http://localhost:5000/account/delete
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "mypassword"
+}
