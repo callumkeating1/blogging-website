@@ -61,8 +61,6 @@ async function createaccount(username,email,password) {
     hash = bycrpt.hash(password, 10, (err, hash) => {
         if (err) throw err;
         password = hash;
-        console.log("hash: ", hash)
-        console.log("password: ", password, " hash: ", hash)
         db.query('INSERT INTO users (userName, email,password, isAdmin) VALUES (?, ?, ?,0)', [username,email,password],(err, result) => {
             if (err) {
                 return error
