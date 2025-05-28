@@ -1,6 +1,7 @@
 const mysql = require('mysql2');
 const bycrpt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { response } = require('express');
 const secretKey = process.env.BACKEND_SECRETKEY;
 const db = mysql.createConnection({
     host: "localhost",
@@ -56,46 +57,39 @@ async function comparePassword(plainTextPassword,hashedPassword) {
     return await bycrpt.compare(plainTextPassword,hashedPassword);
 } 
 
-function createaccount(username,email,password) {
-    bycrpt.hash(password, 10, (err, hash) => {
+async function createaccount(username,email,password) {
+    hash = bycrpt.hash(password, 10, (err, hash) => {
         if (err) throw err;
         password = hash;
+        console.log("hash: ", hash)
+        console.log("password: ", password, " hash: ", hash)
+        db.query('INSERT INTO users (userName, email,password, isAdmin) VALUES (?, ?, ?,0)', [username,email,password],(err, result) => {
+            if (err) {
+                return error
+            }
+            console.log("created account");
+            return "successfully created account";
+        });
     });
-    db.query('INSERT INTO users (userName, email,password, isAdmin) VALUES (?, ?, ?,0)', [username,email,password],(err, result) => {
-        if (err) throw err;
-    });
-    console.log("created account");
-    return "successfully created account";
 }
 async function deleteAccount(username, password) {
-    db.query('SELECT password FROM users WHERE userName = ?', [username], (err, result) => {
-        if (err) {
-            return "error occured while fetching userdata";
-        }
-        if (comparePassword(password, result[0].password)) {
-            console.log("password matched");
-        } else {
-            return "username or password is incorrect";
-        }
-        if (password.length <= 0) {
-            return "password is blank!";
-        }
-        db.query('DELETE FROM posts WHERE userName = ?', [result], (err, result) => {
-            if (err) {
-                return "error occured while deleting posts";
-            }
-            console.log(result);
-            db.query('DELETE FROM users WHERE userName = ?', [username], (err, result) => {
-                if (err) {
-                    return "error occured while deleting account";
-                }
+    if (!password || password.trim().length === 0 || !username || username.trim().length === 0) {
+        return "password is blank!";
+    }
 
-                console.log(result);        
-                return "success";
-            })
-        })
-    })
+    try {
+        const result = await new Promise((resolve, reject) => {
+            db.query('DELETE FROM users WHERE username = ?', [username], (err, result) => {
+                if (err) reject("error");
+                else resolve("success");
+            });
+        });
+        return result;
+    } catch (err) {
+        return err; // will be "error"
+    }
 }
+
 
 async function login(username,password) {
     db.query('SELECT password FROM users WHERE userName = ?',[username], (err, result) => {
@@ -103,9 +97,7 @@ async function login(username,password) {
             console.log(err);
             return "server encounterd an error while logging in";
         }
-        if (comparePassword(password,result[0].password)) {
-
-        } else {
+        if (!comparePassword(password,result[0].password)) {
             return "username or password is incorrect";
         }
         if (password.length <= 0) {
@@ -141,4 +133,4 @@ async function checkAccountExists(username, email) {
 }
 
 
-module.exports = { createaccount, hashPassword, comparePassword, login, post, checkAccountExists };
+module.exports = { createaccount, hashPassword, comparePassword, login, post, checkAccountExists,deleteAccount };
