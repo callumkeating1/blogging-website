@@ -15,9 +15,7 @@ app.get('/', (req,res) => {
     return res.status(200).send("connected successfully");
 });
 app.post('/account/create', async (req,res) => {
-    console.log("create request recived")
     const existingAcc = await backend.checkAccountExists(req.body.username);
-    console.log(existingAcc)
     if (existingAcc === 1) {
         return res.status(409).json({error : 'Conflict', message : 'account already exists'})
     }
