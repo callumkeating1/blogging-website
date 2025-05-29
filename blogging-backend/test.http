@@ -19,7 +19,7 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:5000/localhost:5000/account/login
+POST http://localhost:5000/account/login
 Content-Type: application/json
 
 {

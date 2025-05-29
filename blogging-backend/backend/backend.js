@@ -1,8 +1,8 @@
 import mysql from "mysql2";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
-const secretKey = process.env.BACKEND_SECRETKEY;
+import * as fs from "fs";
+const secretKey = fs.readFileSync("./private.key", "utf8");
 const db = mysql.createConnection({
     host: "localhost",
     user: process.env.DB_USER,
@@ -78,6 +78,9 @@ async function login(username,password) {
                 if (err) {
                     console.log(err);
                     return reject("server encounterd an error while logging in");
+                }
+                if (result.length <= 0) {
+                    return reject("username or password is incorrect");
                 }
                 if (!comparePassword(password,result[0].password)) {
                     return reject("username or password is incorrect");

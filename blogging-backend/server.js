@@ -28,9 +28,13 @@ app.post("/account/create", async (req,res) => {
         console.log(createRresponse);
     }
 });
-app.post("/account/login", (req,res) => {
-    if (backend.login(req.body.username,req.body.password)) {
-        return res.status(200).json({ error : "none", message : "successfully logged into user", "code" : 200 });
+app.post("/account/login", async (req,res) => {
+    const code = await backend.login(req.body.username,req.body.password);
+    if (code === "username or password is incorrect") {
+        return res.status(200).json({ error : "none", message : "successfully logged into user", code : 200, "jwt" : code });
+    }
+    else {
+        return res.status(400).json({ error : "badRequest", message : "username or password is incorrect", code : 400 });
     }
 });
 app.delete("/account/delete", async (req,res) => {
@@ -38,10 +42,15 @@ app.delete("/account/delete", async (req,res) => {
     var response = await backend.deleteAccount(req.body.username,req.body.password);
     console.log(response);
     if (response === "error") {
+        console.log("error");
         return res.status(500).json({ error : "serverError", message : "server encountered an error deleting user", "code" : 500 });
     }
-    else {
-        return res.status(200).json({ error: "none", message : "successfully deleted user", "code" : 200 });
+    else if (response === "success") {
+        console.log("success");
+        return res.status(204).json({ error: "none", message: "successfully deleted user" });
+    } else {
+        console.log("error 2");
+        return res.status(500).json({ error : "serverError", message : "server encountered an error deleting user", "code" : 500 });
     }
 });
 
