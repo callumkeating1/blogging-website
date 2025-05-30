@@ -3,6 +3,8 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import * as fs from "fs";
 const secretKey = fs.readFileSync("./private.key", "utf8");
+const publicKey = fs.readFileSync("./public.key", "utf8");
+
 const db = mysql.createConnection({
     host: "localhost",
     user: process.env.DB_USER,
@@ -70,7 +72,15 @@ async function deleteAccount(username, password) {
     }
 }
 
-
+function verifyToken(token) {
+    try {
+        const decoded = jwt.verify(token, publicKey, { algorithms: ["RS256"] });
+        return decoded;
+    } catch (error) {
+        console.error("Token verification error:", error.message);
+        return null;
+    }
+}
 async function login(username,password) {
     try {
         const output = await new Promise((resolve,reject) => {
@@ -105,13 +115,37 @@ async function login(username,password) {
         return err;
     }
 }
+function refreshToken(token) {
+    try {
+        const decoded = jwt.verify(token, secretKey, {
+            algorithms: ["RS256"]
+        });
 
+        const payload = { ...decoded };
+        delete payload.iat;
+        delete payload.exp;
+        delete payload.nbf;
 
-function post(username, [title, text]) {
+        const newToken = jwt.sign(payload, secretKey, {
+            algorithm: "RS256",
+            expiresIn: "30d"
+        });
+
+        return newToken;
+    } catch (err) {
+        console.error("Failed to refresh token:", err);
+        return null;
+    }
+}
+
+function post(username, [title, text], token) {
     db.query("SELECT userID FROM users WHERE userName = ?", [username], (err, result) => {
         if (err) {
             return "error occured while fetching userdata";
         }
+        const jwtToken = verifyToken(token);
+        console.log(jwtToken);
+
         console.log(result);
         db.query("INSERT INTO posts (title, content, userID) VALUES (?, ?, ?)", [title, text, result], (err) => {
             if (err) {
@@ -140,5 +174,6 @@ export default {
     login,
     post,
     checkAccountExists,
-    deleteAccount
+    deleteAccount,
+    refreshToken
 };

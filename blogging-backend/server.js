@@ -12,8 +12,25 @@ app.use(express.json());
 const server = http.createServer(app);
 
 
-app.get("/", (req,res) => {
-    return res.status(200).send("connected successfully");
+app.post("/", async (req, res) => {
+
+    if (!req.body || typeof req.body !== "object") {
+        return res.status(400).json({ error: "badRequest", message: "Missing or invalid body" });
+    }
+
+    const { token } = req.body;
+
+    if (!token) {
+        return res.status(400).json({ error: "Token not provided" });
+    }
+
+    const refreshedToken = backend.refreshToken(token);
+
+    if (!refreshedToken) {
+        return res.status(401).json({ error : "badRequest", message : "Invalid or malformed token" });
+    }
+
+    return res.status(200).json({ jwt : refreshedToken });
 });
 app.post("/account/create", async (req,res) => {
     const existingAcc = await backend.checkAccountExists(req.body.username, req.body.email);
@@ -31,10 +48,10 @@ app.post("/account/create", async (req,res) => {
 app.post("/account/login", async (req,res) => {
     const code = await backend.login(req.body.username,req.body.password);
     if (code === "username or password is incorrect") {
-        return res.status(200).json({ error : "none", message : "successfully logged into user", code : 200, "jwt" : code });
+        return res.status(400).json({ error : "badRequest", message : "username or password is incorrect", code : 400 });
     }
     else {
-        return res.status(400).json({ error : "badRequest", message : "username or password is incorrect", code : 400 });
+        return res.status(200).json({ error : "none", message : "successfully logged into user", code : 200, "jwt" : code });
     }
 });
 app.delete("/account/delete", async (req,res) => {

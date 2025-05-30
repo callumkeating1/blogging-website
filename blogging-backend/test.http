@@ -26,3 +26,12 @@ Content-Type: application/json
   "username": "testuser",
   "password":"password"
 }
+
+###
+
+POST http://localhost:5000/
+Content-Type: application/json
+
+{
+  "token" : ""
+}
