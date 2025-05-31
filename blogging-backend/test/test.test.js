@@ -1,5 +1,6 @@
 import server from "../server.js";
 import request from "supertest";
+import { db } from "../backend/backend.js";
 
 describe("Account tests", () => {
 
@@ -35,5 +36,10 @@ describe("Account tests", () => {
             .delete("/account/delete")
             .send({ "username": "testuser","password": "mypassword" });
         expect(res.status).toBe(204);
+    });
+
+    afterAll(() => {
+        server.close();  // stops HTTP server
+        db.end();        // closes DB connection
     });
 });

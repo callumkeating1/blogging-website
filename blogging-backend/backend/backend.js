@@ -5,7 +5,7 @@ import * as fs from "fs";
 const secretKey = fs.readFileSync("./private.key", "utf8");
 const publicKey = fs.readFileSync("./public.key", "utf8");
 
-const db = mysql.createConnection({
+export const db = mysql.createConnection({
     host: "localhost",
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
