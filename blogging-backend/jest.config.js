@@ -1,5 +1,7 @@
 export default {
     testEnvironment: "node",
-    transform: {},
-    maxWorkers: 1,
+    transform: {
+        "^.+\\.js$": "babel-jest"
+    },
+    maxWorkers: 1
 };

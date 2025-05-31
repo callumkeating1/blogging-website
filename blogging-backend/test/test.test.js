@@ -15,7 +15,8 @@ describe("Account tests", () => {
     test("can you log into account", async () => {
         const res = await request(server)
             .post("/account/login")
-            .send({ message: "Test" });
+            .send({ username : "testuser", password: "mypassword" });
+        token = res.body.jwt;
         expect(res.status).toBe(200);
         expect(res.body).not.toEqual({ error : "badRequest", message : "username or password is incorrect", code : 400 });
     });
@@ -24,6 +25,7 @@ describe("Account tests", () => {
         const res = await request(server)
             .post("/")
             .send({ token : token });
+        console.log("TOKEN IS: " + token);
         expect(res.status).toBe(200);
         expect(res.body.error).not.toBeDefined();
     });
@@ -34,5 +36,4 @@ describe("Account tests", () => {
             .send({ "username": "testuser","password": "mypassword" });
         expect(res.status).toBe(204);
     });
-
 });
