@@ -5,23 +5,12 @@ import * as fs from "fs";
 const secretKey = fs.readFileSync("./private.key", "utf8");
 const publicKey = fs.readFileSync("./public.key", "utf8");
 
-export const db = mysql.createConnection({
+export const db = mysql.createPool({
     host: "localhost",
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: "blog"
 });
-
-db.connect(err => {
-    if (err) {
-        throw err;
-    }
-    else {
-        console.log("Connected to MySQL");
-    }
-
-});
-
 
 
 async function hashPassword(password, salt = 10) {
@@ -72,6 +61,7 @@ async function deleteAccount(username, password) {
     }
 }
 
+// eslint-disable-next-line no-unused-vars
 function verifyToken(token) {
     try {
         const decoded = jwt.verify(token, publicKey, { algorithms: ["RS256"] });
@@ -138,24 +128,9 @@ function refreshToken(token) {
     }
 }
 
-function post(username, [title, text], token) {
-    db.query("SELECT userID FROM users WHERE userName = ?", [username], (err, result) => {
-        if (err) {
-            return "error occured while fetching userdata";
-        }
-        const jwtToken = verifyToken(token);
-        console.log(jwtToken);
-
-        console.log(result);
-        db.query("INSERT INTO posts (title, content, userID) VALUES (?, ?, ?)", [title, text, result], (err) => {
-            if (err) {
-                return "error occured while posting";
-            }
-            else {
-                return "success";
-            }
-        });
-    });
+// eslint-disable-next-line no-unused-vars
+function post(title, text, token) {
+    db.query("select * from users");
 }
 async function checkAccountExists(username, email) {
     return new Promise((resolve, reject) => {

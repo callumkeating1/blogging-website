@@ -3,7 +3,6 @@ import request from "supertest";
 import { db } from "../backend/backend.js";
 
 describe("Account tests", () => {
-
     let token;
 
     test("create account", async () => {

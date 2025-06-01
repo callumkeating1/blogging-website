@@ -32,6 +32,10 @@ app.post("/", async (req, res) => {
 
     return res.status(200).json({ jwt : refreshedToken });
 });
+
+
+
+
 app.post("/account/create", async (req,res) => {
     const existingAcc = await backend.checkAccountExists(req.body.username, req.body.email);
     if (existingAcc === 1) {
@@ -39,21 +43,29 @@ app.post("/account/create", async (req,res) => {
     }
     const createResponse = await backend.createaccount(req.body.username,req.body.email,req.body.password);
     if (createResponse == "successfully created account")  {
-        return res.status(201).json({ error : "none", message : "successfully created user", "code" : 201 });
+        return res.status(201).json({ message : "successfully created user", "code" : 201 });
     }
     else {
         console.log(createResponse);
     }
 });
+
+
+
+
 app.post("/account/login", async (req,res) => {
     const code = await backend.login(req.body.username,req.body.password);
     if (code === "username or password is incorrect") {
         return res.status(400).json({ error : "badRequest", message : "username or password is incorrect", code : 400 });
     }
     else {
-        return res.status(200).json({ error : "none", message : "successfully logged into user", code : 200, "jwt" : code });
+        return res.status(200).json({ message : "successfully logged into user", code : 200, "jwt" : code });
     }
 });
+
+
+
+
 app.delete("/account/delete", async (req,res) => {
     console.log("delete request recived");
     var response = await backend.deleteAccount(req.body.username,req.body.password);
@@ -64,11 +76,28 @@ app.delete("/account/delete", async (req,res) => {
     }
     else if (response === "success") {
         console.log("success");
-        return res.status(204).json({ error: "none", message: "successfully deleted user" });
+        return res.status(204).json({ message: "successfully deleted user" });
     } else {
         console.log("error 2");
         return res.status(500).json({ error : "serverError", message : "server encountered an error deleting user", "code" : 500 });
     }
+});
+
+
+
+app.post("/post", async (req,res) => {
+    console.log("post request recived");
+    const { title, text, jwt } = req.body;
+    if (!text || !title) {
+        return res.status(400).json({ message : "no contents in post" });
+    }
+    if (!jwt) {
+        return res.status(401).json({ message : "no token provided by user" });
+    }
+    var createPost = await backend.post(title,text,jwt);
+    console.log(createPost);
+
+    return res.status(201).json({ message : "successfully posted" });
 });
 
 server.listen(port, () => {
