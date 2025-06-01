@@ -21,7 +21,7 @@ async function comparePassword(plainTextPassword,hashedPassword) {
     return await bcrypt.compare(plainTextPassword,hashedPassword);
 }
 
-async function createaccount(username,email,password) {
+async function createAccount(username,email,password) {
     try{
         const output = await new Promise((resolve,reject) => {
             bcrypt.hash(password, 10, (err, hash) => {
@@ -29,7 +29,7 @@ async function createaccount(username,email,password) {
                 password = hash;
                 db.query("INSERT INTO users (userName, email,password, isAdmin) VALUES (?, ?, ?,0)", [username,email,password],(err) => {
                     if (err) {
-                        reject("server encounted error");
+                        reject("server encountered error");
                     }
                     console.log("created account");
                     resolve("successfully created account");
@@ -61,23 +61,13 @@ async function deleteAccount(username, password) {
     }
 }
 
-// eslint-disable-next-line no-unused-vars
-function verifyToken(token) {
-    try {
-        const decoded = jwt.verify(token, publicKey, { algorithms: ["RS256"] });
-        return decoded;
-    } catch (error) {
-        console.error("Token verification error:", error.message);
-        return null;
-    }
-}
 async function login(username,password) {
     try {
         const output = await new Promise((resolve,reject) => {
             db.query("SELECT id, password, isAdmin FROM users WHERE userName = ?", [username], (err, result) => {
                 if (err) {
                     console.log(err);
-                    return reject("server encounterd an error while logging in");
+                    return reject("server encountered an error while logging in");
                 }
                 if (result.length <= 0) {
                     return reject("username or password is incorrect");
@@ -128,9 +118,43 @@ function refreshToken(token) {
     }
 }
 
-// eslint-disable-next-line no-unused-vars
-function post(title, text, token) {
-    db.query("select * from users");
+function verifyToken(token) {
+    try {
+        const decoded = jwt.verify(token, publicKey, { algorithms: ["RS256"] });
+        return decoded;
+    } catch (error) {
+        console.error("Token verification error:", error.message);
+        return null;
+    }
+}
+
+async function post(title, text, token) {
+    const tokenData = verifyToken(token);
+    if (tokenData === null) {
+        return "invalid token";
+    }
+    const username = tokenData.username;
+    try {
+
+        const [rows] = await db.query("select * from users where username = ?", [username]);
+        if (rows.length === 0) {
+            return "user doesn't exist";
+        }
+        if (rows[0].id !== tokenData.id) {
+            return "malformed token";
+        }
+        if (text.length > 10000 || title.length > 255) {
+            return "length too long";
+        }
+    } catch {
+        return "error posting";
+    }
+    try {
+        await db.query("INSERT INTO posts (userID, title, contents) VALUES (?, ?, ?)", [tokenData.id, title,text]);
+    } catch {
+        return "error posting";
+    }
+    return "posted successfully";
 }
 async function checkAccountExists(username, email) {
     return new Promise((resolve, reject) => {
@@ -143,7 +167,7 @@ async function checkAccountExists(username, email) {
 
 
 export default {
-    createaccount,
+    createAccount,
     hashPassword,
     comparePassword,
     login,

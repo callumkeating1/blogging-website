@@ -41,7 +41,7 @@ app.post("/account/create", async (req,res) => {
     if (existingAcc === 1) {
         return res.status(409).json({ error : "Conflict", message : "username or email is already in use" });
     }
-    const createResponse = await backend.createaccount(req.body.username,req.body.email,req.body.password);
+    const createResponse = await backend.createAccount(req.body.username,req.body.email,req.body.password);
     if (createResponse == "successfully created account")  {
         return res.status(201).json({ message : "successfully created user", "code" : 201 });
     }
@@ -67,7 +67,6 @@ app.post("/account/login", async (req,res) => {
 
 
 app.delete("/account/delete", async (req,res) => {
-    console.log("delete request recived");
     var response = await backend.deleteAccount(req.body.username,req.body.password);
     console.log(response);
     if (response === "error") {
@@ -86,7 +85,6 @@ app.delete("/account/delete", async (req,res) => {
 
 
 app.post("/post", async (req,res) => {
-    console.log("post request recived");
     const { title, text, jwt } = req.body;
     if (!text || !title) {
         return res.status(400).json({ message : "no contents in post" });
