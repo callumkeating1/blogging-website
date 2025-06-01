@@ -39,7 +39,7 @@ describe("Account tests", () => {
     });
 
     afterAll(() => {
-        server.close();  // stops HTTP server
-        db.end();        // closes DB connection
+        server.close();
+        db.end();
     });
 });
