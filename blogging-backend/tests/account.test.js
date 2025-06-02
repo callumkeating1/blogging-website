@@ -25,7 +25,6 @@ describe("Account tests", () => {
         const res = await request(server)
             .post("/")
             .send({ token : token });
-        console.log("TOKEN IS: " + token);
         expect(res.status).toBe(200);
         expect(res.body.error).not.toBeDefined();
     });

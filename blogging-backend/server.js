@@ -42,11 +42,8 @@ app.post("/account/create", async (req,res) => {
         return res.status(409).json({ error : "Conflict", message : "username or email is already in use" });
     }
     const createResponse = await backend.createAccount(req.body.username,req.body.email,req.body.password);
-    if (createResponse == "successfully created account")  {
+    if (createResponse === "successfully created account")  {
         return res.status(201).json({ message : "successfully created user", "code" : 201 });
-    }
-    else {
-        console.log(createResponse);
     }
 });
 
@@ -68,16 +65,12 @@ app.post("/account/login", async (req,res) => {
 
 app.delete("/account/delete", async (req,res) => {
     var response = await backend.deleteAccount(req.body.username,req.body.password);
-    console.log(response);
     if (response === "error") {
-        console.log("error");
         return res.status(500).json({ error : "serverError", message : "server encountered an error deleting user", "code" : 500 });
     }
     else if (response === "success") {
-        console.log("success");
         return res.status(204).json({ message: "successfully deleted user" });
     } else {
-        console.log("error 2");
         return res.status(500).json({ error : "serverError", message : "server encountered an error deleting user", "code" : 500 });
     }
 });
@@ -92,8 +85,11 @@ app.post("/post", async (req,res) => {
     if (!jwt) {
         return res.status(401).json({ message : "no token provided by user" });
     }
-    var createPost = await backend.post(title,text,jwt);
-    console.log(createPost);
+    try {
+        await backend.post(title,text,jwt);
+    } catch {
+        return res.status(500).json({ error : "serverError", message : "failed to post" });
+    }
 
     return res.status(201).json({ message : "successfully posted" });
 });

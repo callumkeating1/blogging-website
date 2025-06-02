@@ -31,7 +31,6 @@ async function createAccount(username,email,password) {
                     if (err) {
                         reject("server encountered error");
                     }
-                    console.log("created account");
                     resolve("successfully created account");
                 });
             });
@@ -66,7 +65,6 @@ async function login(username,password) {
         const output = await new Promise((resolve,reject) => {
             db.query("SELECT id, password, isAdmin FROM users WHERE userName = ?", [username], (err, result) => {
                 if (err) {
-                    console.log(err);
                     return reject("server encountered an error while logging in");
                 }
                 if (result.length <= 0) {
@@ -85,7 +83,6 @@ async function login(username,password) {
                     isAdmin: result[0].isAdmin
                 };
                 const webToken = jwt.sign(jwtData,secretKey,{ algorithm: "RS256",expiresIn: "30d" });
-                console.log(webToken);
                 resolve(webToken);
             });
         });
@@ -112,8 +109,7 @@ function refreshToken(token) {
         });
 
         return newToken;
-    } catch (err) {
-        console.error("Failed to refresh token:", err);
+    } catch {
         return null;
     }
 }
@@ -122,8 +118,7 @@ function verifyToken(token) {
     try {
         const decoded = jwt.verify(token, publicKey, { algorithms: ["RS256"] });
         return decoded;
-    } catch (error) {
-        console.error("Token verification error:", error.message);
+    } catch {
         return null;
     }
 }
