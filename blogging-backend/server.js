@@ -86,13 +86,19 @@ app.post("/post", async (req,res) => {
         return res.status(401).json({ message : "no token provided by user" });
     }
     try {
-        await backend.post(title,text,jwt);
+        console.log(await backend.post(title,text,jwt));
     } catch {
         return res.status(500).json({ error : "serverError", message : "failed to post" });
     }
 
     return res.status(201).json({ message : "successfully posted" });
 });
+
+
+
+
+
+
 
 server.listen(port, () => {
     console.log(`Server is running on port ${port}`);

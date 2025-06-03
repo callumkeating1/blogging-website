@@ -29,9 +29,18 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:5000/
+POST http://localhost:5000/post
 Content-Type: application/json
 
 {
-  "token" : ""
+  "title" : "title",
+  "text" : "this is the text",
+  "jwt" : ""
 }
+
+###
+GET http://localhost:5000/localhost:5000/account/getId?userName=
+
+
+###
+GET http://localhost:5000/post/GET?userID

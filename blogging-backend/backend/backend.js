@@ -1,4 +1,4 @@
-import mysql from "mysql2";
+import mysql from "mysql2/promise";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import * as fs from "fs";
@@ -70,7 +70,7 @@ async function login(username,password) {
                 if (result.length <= 0) {
                     return reject("username or password is incorrect");
                 }
-                if (!comparePassword(password,result[0].password)) {
+                if (!comparePassword(password, result[0].password)) {
                     return reject("username or password is incorrect");
                 }
                 if (password.length <= 0) {
