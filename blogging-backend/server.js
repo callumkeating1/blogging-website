@@ -37,14 +37,18 @@ app.post("/", async (req, res) => {
 
 
 app.post("/account/create", async (req,res) => {
+    console.log("create request received");
     const existingAcc = await backend.checkAccountExists(req.body.username, req.body.email);
     if (existingAcc === 1) {
+        console.log("account exists already");
         return res.status(409).json({ error : "Conflict", message : "username or email is already in use" });
     }
     const createResponse = await backend.createAccount(req.body.username,req.body.email,req.body.password);
     if (createResponse === "successfully created account")  {
+        console.log("created account");
         return res.status(201).json({ message : "successfully created user", "code" : 201 });
     }
+
 });
 
 
@@ -77,24 +81,41 @@ app.delete("/account/delete", async (req,res) => {
 
 
 
-app.post("/post", async (req,res) => {
+
+app.post("/post", async (req, res) => {
     const { title, text, jwt } = req.body;
+
     if (!text || !title) {
-        return res.status(400).json({ message : "no contents in post" });
+        return res.status(400).json({ message: "no contents in post" });
     }
     if (!jwt) {
-        return res.status(401).json({ message : "no token provided by user" });
-    }
-    try {
-        console.log(await backend.post(title,text,jwt));
-    } catch {
-        return res.status(500).json({ error : "serverError", message : "failed to post" });
+        return res.status(401).json({ message: "no token provided by user" });
     }
 
-    return res.status(201).json({ message : "successfully posted" });
+    try {
+        await backend.post(title, text, jwt);
+        return res.status(201).json({ message: "successfully posted" });
+    } catch (err) {
+        console.error("Post Error:", err);
+        return res.status(500).json({ error: "serverError", message: "failed to post" });
+    }
 });
 
 
+
+
+app.post("/post/delete", async (req,res) => {
+    const { postID, jwt } = req.body;
+    try{
+
+        await backend.deletePost(postID, jwt);
+    } catch {
+        return res.status(500).json({ error : "serverError", message : "error while trying to delete post" });
+    }
+
+
+    return res.status(410).json({ message : "successfully deleted message" });
+});
 
 
 

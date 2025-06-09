@@ -2,6 +2,7 @@ import mysql from "mysql2/promise";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import * as fs from "fs";
+
 const secretKey = fs.readFileSync("./private.key", "utf8");
 const publicKey = fs.readFileSync("./public.key", "utf8");
 
@@ -12,103 +13,72 @@ export const db = mysql.createPool({
     database: "blog"
 });
 
-
 async function hashPassword(password, salt = 10) {
-    const hashed = await bcrypt.hash(password,salt);
-    return hashed;
-}
-async function comparePassword(plainTextPassword,hashedPassword) {
-    return await bcrypt.compare(plainTextPassword,hashedPassword);
+    return await bcrypt.hash(password, salt);
 }
 
-async function createAccount(username,email,password) {
-    try{
-        const output = await new Promise((resolve,reject) => {
-            bcrypt.hash(password, 10, (err, hash) => {
-                if (err) throw err;
-                password = hash;
-                db.query("INSERT INTO users (userName, email,password, isAdmin) VALUES (?, ?, ?,0)", [username,email,password],(err) => {
-                    if (err) {
-                        reject("server encountered error");
-                    }
-                    resolve("successfully created account");
-                });
-            });
-        });
-        return output;
-    }
-    catch (err) {
-        return err;
-    }
+async function comparePassword(plainTextPassword, hashedPassword) {
+    return await bcrypt.compare(plainTextPassword, hashedPassword);
 }
+
+async function createAccount(username, email, password) {
+    const hashed = await hashPassword(password);
+    await db.query(
+        "INSERT INTO users (userName, email, password, isAdmin) VALUES (?, ?, ?, 0)",
+        [username, email, hashed]
+    );
+    return "successfully created account";
+}
+
 async function deleteAccount(username, password) {
-
-    if (!password || password.trim().length === 0 || !username || username.trim().length === 0) {
+    if (!username?.trim() || !password?.trim()) {
         return "password is blank!";
     }
 
-    try {
-        const result = await new Promise((resolve, reject) => {
-            db.query("DELETE FROM users WHERE username = ?", [username], (err) => {
-                if (err) reject("error");
-                else resolve("success");
-            });
-        });
-        return result;
-    } catch (err) {
-        return err;
-    }
+    await db.query("DELETE FROM users WHERE username = ?", [username]);
+    return "success";
 }
 
-async function login(username,password) {
-    try {
-        const output = await new Promise((resolve,reject) => {
-            db.query("SELECT id, password, isAdmin FROM users WHERE userName = ?", [username], (err, result) => {
-                if (err) {
-                    return reject("server encountered an error while logging in");
-                }
-                if (result.length <= 0) {
-                    return reject("username or password is incorrect");
-                }
-                if (!comparePassword(password, result[0].password)) {
-                    return reject("username or password is incorrect");
-                }
-                if (password.length <= 0) {
-                    return reject("password is blank!");
-                }
+async function login(username, password) {
+    const [result] = await db.query(
+        "SELECT id, password, isAdmin FROM users WHERE userName = ?",
+        [username]
+    );
 
-                let jwtData = {
-                    username: username,
-                    id: result[0].id,
-                    isAdmin: result[0].isAdmin
-                };
-                const webToken = jwt.sign(jwtData,secretKey,{ algorithm: "RS256",expiresIn: "30d" });
-                resolve(webToken);
-            });
-        });
-        return output;
+    if (result.length === 0) {
+        return "username or password is incorrect";
     }
-    catch (err) {
-        return err;
+
+    const valid = await comparePassword(password, result[0].password);
+    if (!valid) {
+        return "username or password is incorrect";
     }
+
+    const jwtData = {
+        username,
+        id: result[0].id,
+        isAdmin: result[0].isAdmin
+    };
+
+    return jwt.sign(jwtData, secretKey, {
+        algorithm: "RS256",
+        expiresIn: "30d"
+    });
 }
+
 function refreshToken(token) {
     try {
-        const decoded = jwt.verify(token, secretKey, {
-            algorithms: ["RS256"]
-        });
+        const decoded = jwt.verify(token, secretKey, { algorithms: ["RS256"] });
 
         const payload = { ...decoded };
         delete payload.iat;
         delete payload.exp;
         delete payload.nbf;
 
-        const newToken = jwt.sign(payload, secretKey, {
+        return jwt.sign(payload, secretKey, {
             algorithm: "RS256",
             expiresIn: "30d"
         });
-
-        return newToken;
     } catch {
         return null;
     }
@@ -116,8 +86,7 @@ function refreshToken(token) {
 
 function verifyToken(token) {
     try {
-        const decoded = jwt.verify(token, publicKey, { algorithms: ["RS256"] });
-        return decoded;
+        return jwt.verify(token, publicKey, { algorithms: ["RS256"] });
     } catch {
         return null;
     }
@@ -125,41 +94,41 @@ function verifyToken(token) {
 
 async function post(title, text, token) {
     const tokenData = verifyToken(token);
-    if (tokenData === null) {
-        return "invalid token";
-    }
-    const username = tokenData.username;
-    try {
+    if (!tokenData) return "invalid token";
 
-        const [rows] = await db.query("select * from users where username = ?", [username]);
-        if (rows.length === 0) {
-            return "user doesn't exist";
-        }
-        if (rows[0].id !== tokenData.id) {
-            return "malformed token";
-        }
-        if (text.length > 10000 || title.length > 255) {
-            return "length too long";
-        }
-    } catch {
-        return "error posting";
-    }
-    try {
-        await db.query("INSERT INTO posts (userID, title, contents) VALUES (?, ?, ?)", [tokenData.id, title,text]);
-    } catch {
-        return "error posting";
-    }
+    const [rows] = await db.query("SELECT * FROM users WHERE username = ?", [tokenData.username]);
+    if (rows.length === 0) return "user doesn't exist";
+    if (rows[0].id !== tokenData.id) return "malformed token";
+    if (text.length > 10000 || title.length > 255) return "length too long";
+
+    await db.query("INSERT INTO posts (userID, title, contents) VALUES (?, ?, ?)", [
+        tokenData.id,
+        title,
+        text
+    ]);
+
     return "posted successfully";
 }
-async function checkAccountExists(username, email) {
-    return new Promise((resolve, reject) => {
-        db.query("SELECT * FROM users WHERE userName = ? OR email = ?", [username, email], (err, result) => {
-            if (err) return reject(2);
-            resolve(result.length > 0 ? 1 : 0);
-        });
-    });
+
+async function deletePost(postID, jwt) {
+    const decoded = verifyToken(jwt);
+    if (!decoded) return "no token";
+
+    const [posts] = await db.query("SELECT * FROM posts WHERE id = ?", [postID]);
+    if (posts.length === 0) return "post not found";
+    if (posts[0].userID !== decoded.id) return "unauthorized";
+
+    await db.query("DELETE FROM posts WHERE id = ?", [postID]);
+    return "deleted";
 }
 
+async function checkAccountExists(username, email) {
+    const [result] = await db.query(
+        "SELECT * FROM users WHERE userName = ? OR email = ?",
+        [username, email]
+    );
+    return result.length > 0 ? 1 : 0;
+}
 
 export default {
     createAccount,
@@ -167,6 +136,7 @@ export default {
     comparePassword,
     login,
     post,
+    deletePost,
     checkAccountExists,
     deleteAccount,
     refreshToken
