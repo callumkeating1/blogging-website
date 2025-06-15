@@ -5,7 +5,7 @@ import Sidebar from './Components/sidebar/';
 
 function App() {
   return (
-    <div className='w-screen h-screen flex bg-zinc-500 dark:bg-zinc-900'>
+    <div className='w-screen h-screen flex bg-white'>
       <Topbar />
     </div>
   );
