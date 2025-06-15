@@ -1,12 +1,7 @@
-interface DropMenuProps {
-    isActive: boolean
-}
-export default function DropMenu(props:DropMenuProps) {
-    if (props.isActive) {
-        return (
-            <div>
-                <h1>dropdown menu</h1>
-            </div>
-        )
-    }
+export default function DropMenu() {
+    return (
+        <div className="absolute bg-slate-100 text-3xl mt-14">
+            <h1>dropdown menu</h1>
+        </div>
+    )
 }
