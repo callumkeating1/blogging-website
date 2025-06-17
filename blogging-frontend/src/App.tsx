@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { motion } from "framer-motion";
-import Topbar from './Components/secondary/topbar';
-import Sidebar from './Components/secondary/sidebar';
+import MainPage from './pages/mainPage';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-function App() {
+export default function App() {
   return (
-    <div className='w-screen h-screen flex bg-white'>
-      <Topbar />
-    </div>
+    <>
+      {/* Optional: Navbar or layout here */}
+      <Routes>
+        <Route path="/" element={<MainPage />} />
+      </Routes>
+    </>
   );
 }
-
-export default App;
