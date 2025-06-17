@@ -5,7 +5,7 @@ import http from "http";
 import backend from "./backend/backend.js";
 
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
@@ -36,6 +36,9 @@ app.post("/", async (req, res) => {
 
 
 
+app.get("/testcon", async (req, res) => {
+    return res.status(200).json({ message : "connected!" });
+});
 app.post("/account/create", async (req,res) => {
     console.log("create request received");
     const existingAcc = await backend.checkAccountExists(req.body.username, req.body.email);
