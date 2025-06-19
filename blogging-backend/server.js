@@ -123,6 +123,15 @@ app.post("/post/delete", async (req,res) => {
 
 
 
+app.get("/post/getRecent", async (req,res) => {
+    const user = req.query.user;
+    if (user === undefined)
+        return res.status(200).json({ posts : [{ title : "this is a title", contents : "this is the content" }, { title : "title 2", contents : "this is another" }] }); 
+    return res.status(200).json({ posts : [{ title : "this is a title", contents : "this is the content" }, { title : "title 2", contents : "this is another" }] });
+});
+
+
+
 
 server.listen(port, () => {
     console.log(`Server is running on port ${port}`);
