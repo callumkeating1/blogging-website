@@ -1,30 +1,32 @@
-import React, { useRef, useEffect, useContext } from "react";
-import { IsClickedContext } from "../../../pages/mainPage/Main";
+import React, { useRef, useEffect, } from "react";
 
 type MyComponentProps = {
   toggleMenu: () => void;
+  dropMenuActive: boolean;
 };
 
-export default function DropMenu({toggleMenu}:MyComponentProps) {
-  const dropdown = useRef<HTMLInputElement>(null);
-    useEffect(() => {
-    if (dropdown.current) {
-        dropdown.current.focus();
-    }
-    }, []);
+export default function DropMenu({ toggleMenu, dropMenuActive }: MyComponentProps) {
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
-    const { isClicked, setIsClicked } = useContext(IsClickedContext);
     useEffect(() => {
-        if (isClicked) {
-            console.log("detected click");
-            setIsClicked(false);
+        function handleClickOutside(event: MouseEvent) {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
             toggleMenu();
         }
-    }, [isClicked]);
+        }
 
+        if (dropMenuActive) {
+        document.addEventListener("mousedown", handleClickOutside);
+        } else {
+        document.removeEventListener("mousedown", handleClickOutside);
+        }
 
+        return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [dropMenuActive, toggleMenu]);
     return (
-        <div className="absolute bg-zinc-500 mt-8 p-5 text-xl rounded-md ring-1 ring-black grid grid-row-16 ">
+        <div ref={dropdownRef} className="absolute bg-zinc-500 mt-8 p-5 text-xl rounded-md ring-1 ring-black grid grid-row-16 ">
             <div className="flex bg-zinc-600 p-1 rounded-lg mb-3 lg:hover:bg-zinc-700 lg:duration-1000">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
