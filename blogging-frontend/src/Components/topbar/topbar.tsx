@@ -1,6 +1,19 @@
 import DropMenu from "./dropmenu";
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { IsClickedContext } from "../../pages/mainPage/Main";
+
 export default function Topbar() {
+
+    const { isClicked, setIsClicked } = useContext(IsClickedContext);
+    useEffect(() => {
+        if (isClicked) {
+            console.log("detected click");
+            setIsClicked(false);
+        }
+    }, [isClicked]);
+
+
+
     const [DropMenuActive, IsActive] = useState<boolean>(false);
     function toggleMenu() {
         DropMenuActive ? IsActive(false) : IsActive(true);

@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import { IsClickedContext } from "../../pages/mainPage/Main";
-
 export default function Contents() {
     const server: string = "http://localhost:5000";
     const [posts, setPosts] = useState<any[] | null>(null);
@@ -24,13 +22,7 @@ export default function Contents() {
         }
         getPosts();
     }, []);
-    const { isClicked, setIsClicked } = useContext(IsClickedContext);
-    useEffect(() => {
-        if (isClicked) {
-            console.log("detected click");
-            setIsClicked(false);
-        }
-    }, [isClicked]);
+
     if (error) {
         return (
             <div className="flex flex-col bg-red-100 m-2 p-3 rounded-lg">
