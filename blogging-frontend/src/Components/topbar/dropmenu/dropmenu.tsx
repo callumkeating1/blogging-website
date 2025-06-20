@@ -1,4 +1,5 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useContext } from "react";
+import { IsClickedContext } from "../../../pages/mainPage/Main";
 
 type MyComponentProps = {
   toggleMenu: () => void;
@@ -10,7 +11,18 @@ export default function DropMenu({toggleMenu}:MyComponentProps) {
     if (dropdown.current) {
         dropdown.current.focus();
     }
-    }, []); // Empty deps array runs once on mount
+    }, []);
+
+    const { isClicked, setIsClicked } = useContext(IsClickedContext);
+    useEffect(() => {
+        if (isClicked) {
+            console.log("detected click");
+            setIsClicked(false);
+            toggleMenu();
+        }
+    }, [isClicked]);
+
+
     return (
         <div className="absolute bg-zinc-500 mt-8 p-5 text-xl rounded-md ring-1 ring-black grid grid-row-16 ">
             <div className="flex bg-zinc-600 p-1 rounded-lg mb-3 lg:hover:bg-zinc-700 lg:duration-1000">
