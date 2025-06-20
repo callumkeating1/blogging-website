@@ -1,4 +1,3 @@
-import { IsClickedContext } from "../../pages/mainPage/Main";
 import React, { useState, useContext } from 'react';
 import DropMenu from "./dropmenu";
 
@@ -9,7 +8,6 @@ export default function Topbar() {
         console.log("TOGGLING MENU");
         DropMenuActive ? IsActive(false) : IsActive(true);
     }
-    const { isClicked, setIsClicked } = useContext(IsClickedContext);
     return (
         <div className="h-fit w-screen bg-gray-300 rounded-3xl p-6 grid grid-cols-9">
             <h1 className="text-2xl font-bold place-items-center col-start-4 col-span-3">blogging website</h1>
