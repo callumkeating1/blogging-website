@@ -3,10 +3,10 @@ import React, { useState, useContext } from 'react';
 import DropMenu from "./dropmenu";
 
 
-
 export default function Topbar() {
     const [DropMenuActive, IsActive] = useState<boolean>(false);
     function toggleMenu() {
+        console.log("TOGGLING MENU");
         DropMenuActive ? IsActive(false) : IsActive(true);
     }
     const { isClicked, setIsClicked } = useContext(IsClickedContext);

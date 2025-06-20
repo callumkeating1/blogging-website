@@ -1,30 +1,16 @@
-import React, { useRef, useEffect, } from "react";
+import React, { useRef, useEffect, useContext } from "react";
 
 type MyComponentProps = {
   toggleMenu: () => void;
   dropMenuActive: boolean;
 };
-
-export default function DropMenu({ toggleMenu, dropMenuActive }: MyComponentProps) {
-    const dropdownRef = useRef<HTMLDivElement>(null);
-
+export default function DropMenu({toggleMenu}:MyComponentProps) {
+    const dropdown = useRef<HTMLInputElement>(null);
     useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
-        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-            toggleMenu();
-        }
-        }
-
-        if (dropMenuActive) {
-        document.addEventListener("mousedown", handleClickOutside);
-        } else {
-        document.removeEventListener("mousedown", handleClickOutside);
-        }
-
-        return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [dropMenuActive, toggleMenu]);
+    if (dropdown.current) {
+        dropdown.current.focus();
+    }
+    }, []);
     return (
         <div ref={dropdownRef} className="absolute bg-zinc-500 mt-8 p-5 text-xl rounded-md ring-1 ring-black grid grid-row-16 ">
             <div className="flex bg-zinc-600 p-1 rounded-lg mb-3 lg:hover:bg-zinc-700 lg:duration-1000">
