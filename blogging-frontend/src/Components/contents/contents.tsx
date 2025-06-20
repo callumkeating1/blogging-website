@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 export default function Contents() {
     const server: string = "http://localhost:5000";
     const [posts, setPosts] = useState<any[] | null>(null);

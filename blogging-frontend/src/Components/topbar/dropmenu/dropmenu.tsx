@@ -1,5 +1,3 @@
-import React, { useRef, useEffect, useContext } from "react";
-
 type MyComponentProps = {
   toggleMenu: () => void;
   dropMenuActive: boolean;
