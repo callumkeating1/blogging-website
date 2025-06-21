@@ -4,6 +4,7 @@ export default function Contents() {
     const [posts, setPosts] = useState<any[] | null>(null);
     const [error, setError] = useState<string | null>(null);
 
+    //fetches data from server
     useEffect(() => {
         async function getPosts() {
             try {
@@ -23,7 +24,7 @@ export default function Contents() {
         getPosts();
     }, []);
 
-    // if couldn't fetch data from server, will likely occur if server is down or client loses connection
+    // runs if couldn't fetch data from server, will likely occur if server is down or client loses connection
     if (error) {
         return (
             <div className="flex flex-col bg-red-100 m-2 p-3 rounded-lg">
@@ -42,6 +43,7 @@ export default function Contents() {
         );
     }
 
+    // normal function
     return (
         <div className="space-y-4 p-4">
             {posts.map((post, index) => (
