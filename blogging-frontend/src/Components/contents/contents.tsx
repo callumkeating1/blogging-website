@@ -23,6 +23,7 @@ export default function Contents() {
         getPosts();
     }, []);
 
+    // if couldn't fetch data from server, will likely occur if server is down or client loses connection
     if (error) {
         return (
             <div className="flex flex-col bg-red-100 m-2 p-3 rounded-lg">
@@ -32,6 +33,7 @@ export default function Contents() {
         );
     }
 
+    // if it hasn't loaded yet
     if (!posts) {
         return (
             <div className="flex flex-col h-full w-full items-center justify-center">
