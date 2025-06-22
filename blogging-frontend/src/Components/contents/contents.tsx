@@ -49,7 +49,7 @@ export default function Contents() {
             {posts.map((post, index) => (
                 <div
                     key={index}
-                    className="flex flex-col bg-slate-300 m-2 p-4 rounded-lg shadow dark:bg-zinc-700 dark:text-white"
+                    className="flex flex-col shadow-sm shadow-[#6a4bca] bg-[#745ac3] m-2 p-4 rounded-lg dark:bg-zinc-700 dark:text-white"
                 >
                     <h2 className="text-lg font-bold">{post.title}</h2>
                     <p>{post.contents}</p>
