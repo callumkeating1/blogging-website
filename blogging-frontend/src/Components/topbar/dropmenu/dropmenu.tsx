@@ -13,7 +13,7 @@ export default function DropMenu({ toggleMenu }: DropMenuProps) {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="absolute top-16 left-1 w-fit max-w-[90vw] rounded-lg bg-zinc-500 dark:bg-zinc-700 p-4 shadow-lg ring-1 ring-black/10 space-y-3"
+        className="absolute top-16 left-1 w-fit max-w-[90vw] rounded-lg bg-[#7558ca] dark:bg-zinc-700 p-4 shadow-lg ring-1 ring-black/10 space-y-3"
       >
         <Icon Text="Account" IconUrl="/svgs/dropmenu/account.svg" />
         <Icon Text="Settings" IconUrl="/svgs/dropmenu/settings.svg" />
