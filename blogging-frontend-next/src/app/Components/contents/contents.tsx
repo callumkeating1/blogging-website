@@ -1,8 +1,16 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import Image from 'next/image'
+
+interface Post {
+  title: string;
+  contents: string;
+}
+
+
 export default function Contents() {
     const server: string = "http://localhost:5000";
-    const [posts, setPosts] = useState<any[] | null>(null);
+    const [posts, setPosts] = useState<Post[] | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     //fetches data from server
@@ -17,9 +25,11 @@ export default function Contents() {
                 const data = await res.json();
                 console.log("Fetched Data:", data);
                 setPosts(data.posts);
-            } catch (err: any) {
-                console.error(err);
-                setError(err.message);
+            } catch (err) {
+                if (err instanceof Error) {
+                    console.error(err);
+                    setError(err.message);
+                }
             }
         }
         getPosts();
@@ -39,7 +49,8 @@ export default function Contents() {
     if (!posts) {
         return (
             <div className="flex flex-col h-full w-full items-center justify-center">
-                <img src="/loading.gif" alt="loading..." className="w-16 h-16" />
+                <Image src="/loading.gif" alt="loading..." className="w-16 h-16" />
+                
             </div>
         );
     }
