@@ -1,5 +1,3 @@
-import { JSX } from "react"
-
 interface ItemProps {
     IconUrl: string,
     Text: string
