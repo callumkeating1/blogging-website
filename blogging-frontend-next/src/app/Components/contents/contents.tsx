@@ -49,7 +49,7 @@ export default function Contents() {
     if (!posts) {
         return (
             <div className="flex flex-col h-full w-full items-center justify-center">
-                <Image src="/loading.gif" alt="loading..." className="w-16 h-16" />
+                <Image src="/loading.gif" alt="loading..." className="w-16 h-16" width={16} height={16} />
                 
             </div>
         );
