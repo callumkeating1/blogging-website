@@ -130,6 +130,12 @@ async function checkAccountExists(username, email) {
     return result.length > 0 ? 1 : 0;
 }
 
+async function getPost() {
+    const [posts] = await db.query("SELECT * FROM posts");
+    console.log(posts);
+    return posts;
+}
+
 export default {
     createAccount,
     hashPassword,
@@ -139,5 +145,6 @@ export default {
     deletePost,
     checkAccountExists,
     deleteAccount,
-    refreshToken
+    refreshToken,
+    getPost
 };

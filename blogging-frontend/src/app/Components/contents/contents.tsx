@@ -24,7 +24,7 @@ export default function Contents() {
                 }
                 const data = await res.json();
                 console.log("Fetched Data:", data);
-                setPosts(data.posts);
+                setPosts(data);
             } catch (err) {
                 if (err instanceof Error) {
                     console.error(err);
@@ -53,6 +53,8 @@ export default function Contents() {
                 
             </div>
         );
+    } else {
+        console.log("posts exists");
     }
 
     // normal function
