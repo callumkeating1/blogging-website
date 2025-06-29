@@ -1,3 +1,8 @@
+import Image from "next/image"
+
+
+
+
 interface ItemProps {
     IconUrl: string,
     Text: string
@@ -6,8 +11,8 @@ interface ItemProps {
 export default function Item(props:ItemProps) {
     return (
         <>
-            <div className="flex bg-[#6449b4] hover:bg-[#8370be] dark:bg-[#7058c4] dark:hover:bg-zinc-500 p-1 rounded-lg mb-3 duration-500">
-                <img src={props.IconUrl} alt={props.Text} />
+            <div className="flex bg-[hsl(255,42%,50%)] hover:bg-[hsl(255,38%,59%)] dark:bg-[hsl(253,48%,56%)] dark:hover:bg-zinc-500 p-1 rounded-lg mb-3 duration-500">
+                <Image src={props.IconUrl} alt={props.Text} />
                 <p className="text-sm font-semibold ml-1">{props.Text}</p>
             </div>
         </>

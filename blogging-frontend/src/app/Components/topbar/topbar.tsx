@@ -11,10 +11,10 @@ export default function Topbar() {
   };
 
   return (
-    <div className="w-full px-6 py-4 bg-[#8464e3] dark:bg-[#462d90] rounded-3xl flex items-center justify-between">
+    <div className="w-full px-6 py-4 bg-[hsl(255,69%,64%)] dark:bg-[hsl(255,52%,37%)] rounded-3xl flex items-center justify-between">
       <div className="flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16" 
-            className="p-1 rounded-lg text-sm bg-[#704bdc] hover:bg-[#6e47e5] dark:bg-[#6c51bf] dark:text-gray-200 duration-500" onClick={toggleMenu}
+            className="p-1 rounded-lg text-sm bg-[hsl(255,67%,58%)] hover:bg-[hsl(255,75%,59%)] dark:bg-[hsl(255,46%,53%)] dark:text-gray-200 duration-500" onClick={toggleMenu}
         >
             <path
                 fillRule="evenodd"
