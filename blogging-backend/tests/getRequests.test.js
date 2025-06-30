@@ -13,7 +13,7 @@ describe("Post tests", () => {
         const res = await request(server)
             .get("/post/getRecent");
         expect(res.status).toBe(200);
-    })
+    });
 });
 afterAll(() => {
     server.close();
