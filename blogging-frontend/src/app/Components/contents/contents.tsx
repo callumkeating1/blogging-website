@@ -5,6 +5,7 @@ import Image from 'next/image'
 interface Post {
   title: string;
   contents: string;
+  username: string;
 }
 
 
@@ -65,6 +66,7 @@ export default function Contents() {
                     key={index}
                     className="flex flex-col shadow-sm shadow-[hsl(255,55%,54%)] dark:shadow-[hsl(255,46%,49%)] bg-[hsl(255,47%,56%)] dark:bg-[hsl(255,46%,36%)] m-2 p-4 rounded-lg dark:text-white"
                 >
+                    <a href="">{posts.username}</a>
                     <h2 className="text-lg font-bold">{post.title}</h2>
                     <p>{post.contents}</p>
                 </div>

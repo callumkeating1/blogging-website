@@ -101,10 +101,11 @@ async function post(title, text, token) {
     if (rows[0].id !== tokenData.id) return "malformed token";
     if (text.length > 10000 || title.length > 255) return "length too long";
 
-    await db.query("INSERT INTO posts (userID, title, contents) VALUES (?, ?, ?)", [
+    await db.query("INSERT INTO posts (userID, title, contents, username) VALUES (?, ?, ?, ?)", [
         tokenData.id,
         title,
-        text
+        text,
+        tokenData.username
     ]);
 
     return "posted successfully";
@@ -130,8 +131,15 @@ async function checkAccountExists(username, email) {
     return result.length > 0 ? 1 : 0;
 }
 
-async function getPost() {
-    const [posts] = await db.query("SELECT * FROM posts");
+async function getPost(username) {
+    let posts;
+
+    if (username) {
+        [posts] = await db.query("SELECT * FROM posts WHERE username = ?", [username]);
+    } else {
+        [posts] = await db.query("SELECT * FROM posts");
+    }
+
     return posts;
 }
 
