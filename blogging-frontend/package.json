@@ -2,6 +2,12 @@
   "name": "blogging-frontend-next",
   "version": "0.1.0",
   "private": true,
+  "browserslist": [
+    "last 2 chrome versions",
+    "last 2 firefox versions",
+    "last 2 safari versions",
+    "last 2 edge versions"
+  ],
   "scripts": {
     "dev": "next dev --turbopack -H localhost",
     "build": "next build",
