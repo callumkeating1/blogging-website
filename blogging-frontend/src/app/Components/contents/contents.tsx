@@ -63,13 +63,16 @@ export default function Contents() {
         <div className="space-y-4 p-4">
             {posts.map((post, index) => (
                 <div
-                    key={index}
-                    className="flex flex-col shadow-sm shadow-[hsl(255,55%,54%)] dark:shadow-[hsl(255,46%,49%)] bg-[hsl(255,47%,56%)] dark:bg-[hsl(255,46%,36%)] m-2 p-4 rounded-lg dark:text-white"
+                key={index}
+                className="flex flex-col shadow-sm shadow-[hsl(255,55%,54%)] dark:shadow-[hsl(255,46%,49%)] bg-[hsl(255,47%,56%)] dark:bg-[hsl(255,46%,36%)] m-2 p-4 rounded-lg dark:text-white"
                 >
-                    <a href="">{post.username}</a>
+                <div className="flex justify-between items-center mb-2 mr-2">
                     <h2 className="text-lg font-bold">{post.title}</h2>
-                    <p>{post.contents}</p>
+                    <a href="" className="text-sm text-blue-800 dark:text-blue-300">{post.username}</a>
                 </div>
+                <p>{post.contents}</p>
+                </div>
+
             ))}
         </div>
     );
