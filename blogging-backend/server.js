@@ -40,15 +40,13 @@ app.get("/testcon", async (req, res) => {
     return res.status(200).json({ message : "connected!" });
 });
 app.post("/account/create", async (req,res) => {
-    console.log("create request received");
     const existingAcc = await backend.checkAccountExists(req.body.username, req.body.email);
     if (existingAcc === 1) {
-        console.log("account exists already");
         return res.status(409).json({ error : "Conflict", message : "username or email is already in use" });
     }
     const createResponse = await backend.createAccount(req.body.username,req.body.email,req.body.password);
     if (createResponse === "successfully created account")  {
-        console.log("created account");
+
         return res.status(201).json({ message : "successfully created user", "code" : 201 });
     }
 
@@ -124,7 +122,6 @@ app.post("/post/delete", async (req,res) => {
 
 
 app.get("/post/getRecent", async (req,res) => {
-    console.log("recived request for posts");
     const posts = await backend.getPost("recent");
     return res.status(200).json(posts);
 });
@@ -133,6 +130,5 @@ app.get("/post/getRecent", async (req,res) => {
 
 
 server.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
 });
 export default server;

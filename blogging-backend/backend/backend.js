@@ -132,7 +132,6 @@ async function checkAccountExists(username, email) {
 
 async function getPost() {
     const [posts] = await db.query("SELECT * FROM posts");
-    console.log(posts);
     return posts;
 }
 
