@@ -11,6 +11,17 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
+  {
+    files: ["**/*.ts", "**/*.tsx"],  // files is top-level in flat config
+    languageOptions: {
+      parserOptions: {
+        project: "./tsconfig.json",  // most likely you want this
+      },
+    },
+    rules: {
+      indent: ["error", 4],
+    },
+  },
 ];
 
 export default eslintConfig;
