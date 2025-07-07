@@ -3,9 +3,9 @@ import React, { useState, useEffect } from "react";
 import Image from 'next/image'
 
 interface Post {
-  title: string;
-  contents: string;
-  username: string;
+    title: string;
+    contents: string;
+    username: string;
 }
 
 
@@ -13,6 +13,7 @@ export default function Contents() {
     const server: string = "http://localhost:5000";
     const [posts, setPosts] = useState<Post[] | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [reachable, setReach] = useState<boolean>(true);
 
     //fetches data from server
     useEffect(() => {
@@ -20,12 +21,16 @@ export default function Contents() {
             try {
                 console.log("Fetching:", server + "/post/getRecent");
                 const res = await fetch(server + "/post/getRecent");
-                if (!res.ok) {
+                if (res.status === 500) {
+                    setReach(false);
+                    setPosts([]);
+                } else if (!res.ok) {
                     throw new Error("Server returned response: " + res.status);
+                } else {
+                    const data = await res.json();
+                    console.log("Fetched Data:", data);
+                    setPosts(data);
                 }
-                const data = await res.json();
-                console.log("Fetched Data:", data);
-                setPosts(data);
             } catch (err) {
                 if (err instanceof Error) {
                     console.error(err);
@@ -35,6 +40,12 @@ export default function Contents() {
         }
         getPosts();
     }, []);
+    if (reachable === false) {
+        console.log("server down")
+        return (
+            <h1>server is down</h1>
+        )
+    }
 
     // runs if couldn't fetch data from server, will likely occur if server is down or client loses connection
     if (error) {

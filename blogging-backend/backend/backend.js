@@ -132,15 +132,19 @@ async function checkAccountExists(username, email) {
 }
 
 async function getPost(username) {
-    let posts;
+    try {
+        let posts;
 
-    if (username) {
-        [posts] = await db.query("SELECT * FROM posts WHERE username = ?", [username]);
-    } else {
-        [posts] = await db.query("SELECT * FROM posts");
+        if (username) {
+            [posts] = await db.query("SELECT * FROM posts WHERE username = ?", [username]);
+        } else {
+            [posts] = await db.query("SELECT * FROM posts");
+        }
+        return posts;
     }
-
-    return posts;
+    catch {
+        return null;
+    }
 }
 
 export default {
