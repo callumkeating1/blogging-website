@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from 'next/image'
+import Link from 'next/link'
 
 interface Post {
     title: string;
@@ -79,7 +80,9 @@ export default function Contents() {
                 >
                     <div className="flex justify-between items-center mb-2 mr-2">
                         <h2 className="text-lg font-bold">{post.title}</h2>
-                        <a href="" className="text-sm text-blue-800 dark:text-blue-300">{post.username}</a>
+                        <Link href={`/account?user=${post.username}`} className="text-sm text-blue-800 dark:text-blue-300">
+                            {post.username}
+                        </Link>
                     </div>
                     <p>{post.contents}</p>
                 </div>
