@@ -23,8 +23,12 @@ export default defineConfig([
             "eol-last": ["warn", "always"],
             "comma-dangle": ["error", "never"],
             "no-trailing-spaces": "error",
-            "object-curly-spacing": ["error", "always"]
-        },
-        extends: ["js/recommended"]
+            "object-curly-spacing": ["error", "always"],
+            "next/no-html-link-for-pages": "off", // deprecated in Next 13+
+            "next/no-img-element": "warn",
+            "next/no-sync-scripts": "warn",
+            "next/no-title-in-document-head": "warn",
+            "next/no-head-element": "warn",
+        }
     }
 ]);

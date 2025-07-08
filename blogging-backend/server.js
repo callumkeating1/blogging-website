@@ -122,12 +122,10 @@ app.post("/post/delete", async (req,res) => {
 
 
 app.get("/post/getRecent", async (req, res) => {
-    console.log("post request recived");
     const username = req.query.username;
 
     const posts = await backend.getPost(username || undefined);
     if (posts === null) {
-        console.log("POSTS IS DOWN");
         return res.status(500).json({ reachable: false, posts: [] });
     }
 

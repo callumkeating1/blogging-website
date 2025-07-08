@@ -80,7 +80,7 @@ export default function Contents() {
                 >
                     <div className="flex justify-between items-center mb-2 mr-2">
                         <h2 className="text-lg font-bold">{post.title}</h2>
-                        <Link href={`/account?user=${post.username}`} className="text-sm text-blue-800 dark:text-blue-300">
+                        <Link href={`/account/${post.username}`} className="text-sm text-blue-800 dark:text-blue-300">
                             {post.username}
                         </Link>
                     </div>
