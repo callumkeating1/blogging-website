@@ -16,8 +16,6 @@ export default function Contents(props:PropTypes) {
     const [posts, setPosts] = useState<Post[] | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [reachable, setReach] = useState<boolean>(true);
-
-    //fetches data from server
     useEffect(() => {
         async function getPosts() {
             try {
@@ -46,7 +44,7 @@ export default function Contents(props:PropTypes) {
             }
         }
         getPosts();
-    }, []);
+    }, [props.username]);
     if (reachable === false) {
         console.log("server down")
         return (
