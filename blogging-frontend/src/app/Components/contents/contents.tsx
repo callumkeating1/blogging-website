@@ -8,9 +8,10 @@ interface Post {
     contents: string;
     username: string;
 }
-
-
-export default function Contents() {
+interface PropTypes {
+    username?: string
+}
+export default function Contents(props:PropTypes) {
     const server: string = "http://localhost:5000";
     const [posts, setPosts] = useState<Post[] | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -21,7 +22,12 @@ export default function Contents() {
         async function getPosts() {
             try {
                 console.log("Fetching:", server + "/post/getRecent");
-                const res = await fetch(server + "/post/getRecent");
+                let res;
+                if (props.username) {
+                    res = await fetch(`${server}/post/getRecent?username=${props.username}`);
+                } else {
+                    res = await fetch(`${server}/post/getRecent`);
+                }
                 if (res.status === 500) {
                     setReach(false);
                     setPosts([]);
